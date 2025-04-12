@@ -1,9 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <list>
 #include <string>
 #include <fstream>
 using namespace std;
 
+void printPath(int parents[], int size, int startv, int endv);
+void bfs(vector<int> alists[], int size, int start, int target);
 int findIndex(vector<string>& lookUp, string city);
 
 int main() {
@@ -11,7 +15,7 @@ int main() {
 	vector<string> lookUpTable;
 	vector<int> adjList[10000];
 	string nextCity;
-	ifstream connectionsFile("connections.txt");
+	ifstream connectionsFile("../connections.txt");
 	if (connectionsFile.is_open()) {
 		int fromIndex = -1;
 		while (getline(connectionsFile, nextCity)) {
@@ -101,4 +105,46 @@ int findIndex(vector<string>& lookUp, string city) { //use linear search to look
 		if (lookUp[i] == city) return i;
 	}
 	return -1;
+}
+
+
+// traces parent pointers back from endv to startv
+void printPath(int parents[], int size, int startv, int endv) {
+	if (endv != startv) {
+		printPath(parents, size, startv, parents[endv]);
+	}
+	cout << endv << " ";  // Of course, you need to output a city name here, not a number! Use the lookup table.
+}
+
+
+void bfs(vector<int> alists[], int size, int start, int target) {
+	int* parents = new int[size];
+	for (int i = 0; i < size; i++) 
+		parents[i] = -1;
+	
+	parents[start] = start;
+	queue<int> q;
+	q.push(start);
+	bool found = false;
+	while (!q.empty() && !found) {
+		int v = q.front(); // by the time this happens, v already has a parent
+		q.pop();
+		if (v == target)
+			found = true;
+		else 
+			for (int i = 0; i < alists[v].size(); i++) {
+				int w = alists[v][i];
+				if (parents[w] == -1) {
+					parents[w] = v;
+					q.push(w);
+				}
+			}
+	}
+	if (found)
+		printPath(parents, size, start, target);
+	else
+		cout << "Not found";
+
+	cout << endl;
+	delete[] parents;
 }
