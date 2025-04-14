@@ -6,9 +6,10 @@
 #include <fstream>
 using namespace std;
 
-void printPath(int parents[], int size, int startv, int endv);
-void bfs(vector<int> alists[], int size, int start, int target);
+void printPath(int parents[], int size, int startv, int endv, vector<string>& lookupTable);
+void bfs(vector<int> alists[], int size, int start, int target, vector<string>& lookupTable);
 int findIndex(vector<string>& lookUp, string city);
+string toLowerCase(string s);
 
 int main() {
 	//we need to read in the cities from the file
@@ -40,55 +41,65 @@ int main() {
 			}
 		}
 		string userInput;
-		int index;
+		int departingCityIndex, destinationCityIndex;
 		do {
 			cout << "Please enter a departing city name or `quit` to exit: ";
-			cin >> userInput; //user enters departing city
+			getline(cin >> ws, userInput); //user enters departing city
 
 			//modify to check if the string inputted matches any of the indices or substrings in the indices
 			if (userInput.length() >= 2) {
-				bool found = false;
+				bool foundDeparting = false, foundDestination = false;
 				for (int j = 0; j < lookUpTable.size(); j++) {
-					if (lookUpTable[j].find(userInput) != string::npos) { //we need to display the cities that the input matches
+					if (toLowerCase(lookUpTable[j]).find(toLowerCase(userInput)) != string::npos) { //we need to display the cities that the input matches
 						cout << j << ": " << lookUpTable[j] << endl;
-						found = true;
+						foundDeparting = true;
 					}
 				}
-				if (found) {
-					cout << "Please select a departing city by entering a number from the list above: ";
-					cin >> userInput;
-					index = stoi(userInput); //casting userInput in the function then the value it returns is used as an index
+				cout << endl; //formatting output
+				if (foundDeparting) { //if we find cities that match the user input
+					while (!foundDestination) {
+						cout << "Please select a departing city by entering a number from the list above: ";
+						getline(cin >> ws, userInput);
+						departingCityIndex = stoi(userInput); //casting userInput in the function then the value it returns is used as an index
+						//output the "Selected Departure: departure number: city, country"
+						cout << "Selected Departure: " << departingCityIndex << ": " << lookUpTable[departingCityIndex] << "\n\n";
 
-					//output the "Selected Departure: departure number: city, country"
-					cout << "Selected Departure: " << index << ": " << lookUpTable[index] << endl;
+						cout << "Please enter a destination city or `quit` to exit: ";
+						getline(cin >> ws, userInput); //user enters destination city
+						//we need to display the cities that the input matches
 
-					cout << "Please enter a destination city or `quit` to exit: ";
-					cin >> userInput; //user enters destination city
-					//we need to display the cities that the input matches
-
-					cout << "Please select a destination by entering a number from the list above: ";
-					cin >> userInput;
-					index = stoi(userInput);
-					cout << "Selected Destination: " << index << ": " << lookUpTable[index] << endl;
-
-					//now we have to use bfs to output the shortest route
-					cout << "Shortest Route: ";
-
-					cout << "Make another search? (`yes` or `no`): ";
-					cin >> userInput;
-					if (userInput == "no" || userInput == "NO" || userInput == "No" || userInput == "nO") {
-						cout << "Press any key to continue . . .";
-						cin.ignore();
-						cin.get();
-						break;
+						for (int j = 0; j < lookUpTable.size(); j++) {
+							if (toLowerCase(lookUpTable[j]).find(toLowerCase(userInput)) != string::npos) { //same loop logic from departing city
+								cout << j << ": " << lookUpTable[j] << endl;
+								foundDestination = true;
+							}
+						}
 					}
+						if (foundDestination) {
+							cout << endl; //formatting output
+							cout << "Please select a destination by entering a number from the list above: ";
+							getline(cin >> ws, userInput);
+							destinationCityIndex = stoi(userInput);
+							cout << "Selected Destination: " << destinationCityIndex << ": " << lookUpTable[destinationCityIndex] << "\n\n";
+							cout << "Shortest Route:\n";
+							bfs(adjList, lookUpTable.size(), departingCityIndex, destinationCityIndex, lookUpTable);
+							cout << "\nMake another search? (`yes` or `no`): ";
+							cin >> userInput;
+							if (toLowerCase(userInput) == "no"){
+								cout << "Press any key to continue . . .";
+								cin.ignore();
+								cin.get();
+								break;
+							}
+						}
+						else cout << "Found no results.\n\n";
 				}
 				else { //if no value is found it should just print this message
-					cout << "Found no results." << endl;
+					cout << "Found no results." << "\n\n";
 				}
 			}
 			else {
-				cout << "Please use at least two characters." << endl;
+				cout << "Please use at least two characters." << "\n\n";
 			}
 		} while (userInput != "quit");
 	}
@@ -108,42 +119,51 @@ int findIndex(vector<string>& lookUp, string city) { //use linear search to look
 
 
 // traces parent pointers back from endv to startv
-void printPath(int parents[], int size, int startv, int endv) {
+void printPath(int parents[], int size, int startv, int endv, vector<string>& lookupTable) {
 	if (endv != startv) {
-		printPath(parents, size, startv, parents[endv]);
+		printPath(parents, size, startv, parents[endv], lookupTable);
+		cout << " --> "; //this is for formatting it will only print the arrow as long as we havent reached the base case
 	}
-	cout << endv << " ";  // Of course, you need to output a city name here, not a number! Use the lookup table.
+	cout << lookupTable[endv]; //from that i modifed print path by adding the lookuptable as a parameter since we need to output the location value
 }
 
 
-void bfs(vector<int> alists[], int size, int start, int target) {
-	int* parents = new int[size];
-	for (int i = 0; i < size; i++) 
-		parents[i] = -1;
+
+void bfs(vector<int> alists[], int size, int start, int target, vector<string>& lookupTable) {
+	int* parents = new int[size]; //creates array, parents points to array/first index
+	for (int i = 0; i < size; i++) //loop through the array
+		parents[i] = -1; //assigning all values in the array -1 to signify no value until updated later on
 	
-	parents[start] = start;
-	queue<int> q;
-	q.push(start);
-	bool found = false;
-	while (!q.empty() && !found) {
-		int v = q.front(); // by the time this happens, v already has a parent
-		q.pop();
-		if (v == target)
-			found = true;
-		else 
+	parents[start] = start; //start index gets updated to reflect an index we have (node that exists at that location so to say)
+	queue<int> q; //create a queue
+	q.push(start); //we push that first index of start to the queue
+	bool found = false; //bool variable set to false
+	while (!q.empty() && !found) { //while the queue isnt empty and we havent found what were looking for continue to loop
+		int v = q.front(); // by the time this happens, v already has a parent (whatever we have at the front of the queue will be constantly updating v while the loop runs
+		q.pop(); //we then pop whatever is at the front
+		if (v == target) //if this target were looking for is equivalent to the value that was previously at the front then we set found to true
+			found = true; //we found the destination from our departing city
+		else  //otherwise we loop through the vector for this nodes adjacency list we created
 			for (int i = 0; i < alists[v].size(); i++) {
-				int w = alists[v][i];
-				if (parents[w] == -1) {
-					parents[w] = v;
-					q.push(w);
+				int w = alists[v][i]; //this arrays index and vectors index value will be stored in w
+				if (parents[w] == -1) { //if that index is empty then v the current node we were just looking at
+					parents[w] = v; //will be assigned to update the parents array to mark the current location per se 
+					q.push(w); //we can now push w to the queue
 				}
 			}
 	}
-	if (found)
-		printPath(parents, size, start, target);
-	else
+	if (found)  //once were out of the loop we check if found is set to true
+		printPath(parents, size, start, target, lookupTable); //here is where i modified bfs and print path, we use the lookup table in print path to print the actual location value rather than index
+	else //otherwise we print out that the path was not found
 		cout << "Not found";
 
 	cout << endl;
-	delete[] parents;
+	delete[] parents; //then we can delete the array to deallocate the memory
+}
+
+string toLowerCase(string s) {
+	for (int i = 0; i < s.length(); i++) { //looping to string as a character array
+		s[i] = tolower(s[i]); //converting each char to lowercase
+	}
+	return s; //once all chars have been converted in the string return the updated string.
 }
