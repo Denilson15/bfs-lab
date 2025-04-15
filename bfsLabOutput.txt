@@ -1,0 +1,76 @@
+Please enter a departing city name or `quit` to exit: s
+Please use at least two characters.
+
+Please enter a departing city name or `quit` to exit: sa
+10: Hong Kong, SAR
+17: Santiago, Chile
+22: Osaka, Japan
+50: Casablanca, Morocco
+62: Winston-Salem, United States
+63: Sao Paulo, Brazil
+84: Jeddah, Saudi Arabia
+86: San Jose, Costa Rica
+90: Warsaw, Poland
+93: Santo Domingo, Dominican Republic
+109: San Francisco, United States
+111: San Juan, Puerto Rico
+118: Lusaka, Zambia
+135: Riyadh, Saudi Arabia
+
+Please select a departing city by entering a number from the list above: 109
+Selected Departure: 109: San Francisco, United States
+
+Please enter a destination city or `quit` to exit: los angeles
+119: Los Angeles, United States
+
+Please select a destination by entering a number from the list above: 119
+Selected Destination: 119: Los Angeles, United States
+
+Shortest Route:
+San Francisco, United States --> Jeddah, Saudi Arabia --> Montevideo, Uruguay --> Seoul, South Korea --> Seattle, United States --> Los Angeles, United States
+
+Make another search? (`yes` or `no`): yes
+Please enter a departing city name or `quit` to exit: new
+11: New York City, United States
+12: New Delhi, India
+103: Auckland, New Zealand
+104: Wellington, New Zealand
+
+Please select a departing city by entering a number from the list above: 11
+Selected Departure: 11: New York City, United States
+
+Please enter a destination city or `quit` to exit: Paris
+65: Paris, France
+
+Please select a destination by entering a number from the list above: 65
+Selected Destination: 65: Paris, France
+
+Shortest Route:
+New York City, United States --> Abidjan, Cote d'Ivoire --> Dakar, Senegal --> Chennai, India --> Paris, France
+
+Make another search? (`yes` or `no`): yes
+Please enter a departing city name or `quit` to exit: Zea
+103: Auckland, New Zealand
+104: Wellington, New Zealand
+
+Please select a departing city by entering a number from the list above: 103
+Selected Departure: 103: Auckland, New Zealand
+
+Please enter a destination city or `quit` to exit: Tto
+Found no results.
+
+Please enter a destination city or `quit` to exit: Tor
+1: Toronto, Canada
+
+Please select a destination by entering a number from the list above: 1
+Selected Destination: 1: Toronto, Canada
+
+Shortest Route:
+Auckland, New Zealand --> Adelaide, Australia --> Casablanca, Morocco --> Toronto, Canada
+
+Make another search? (`yes` or `no`): no
+Press any key to continue . . .
+
+C:\Users\galva\OneDrive\Desktop\School Work\Spring 2025\CS20\bfs-lab\Project1\x64\Debug\Project1.exe (process 29904) exited with code 0 (0x0).
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .
