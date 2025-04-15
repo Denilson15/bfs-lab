@@ -42,13 +42,14 @@ int main() {
 		}
 		string userInput;
 		int departingCityIndex, destinationCityIndex;
+		bool quitProgram = false; // i had to add this because i originally tried to break out of the loop but the if statement I was using to break out was then wrapped in a nested loop so it broke out of the other loop which led to it not ending the program
 		do {
 			cout << "Please enter a departing city name or `quit` to exit: ";
 			getline(cin >> ws, userInput); //user enters departing city
 
 			//modify to check if the string inputted matches any of the indices or substrings in the indices
 			if (userInput.length() >= 2) {
-				bool foundDeparting = false, foundDestination = false;
+				bool foundDeparting = false, foundDestination = false; //used to track if we found the flights
 				for (int j = 0; j < lookUpTable.size(); j++) {
 					if (toLowerCase(lookUpTable[j]).find(toLowerCase(userInput)) != string::npos) { //we need to display the cities that the input matches
 						cout << j << ": " << lookUpTable[j] << endl;
@@ -57,13 +58,13 @@ int main() {
 				}
 				cout << endl; //formatting output
 				if (foundDeparting) { //if we find cities that match the user input
-					while (!foundDestination) {
-						cout << "Please select a departing city by entering a number from the list above: ";
-						getline(cin >> ws, userInput);
-						departingCityIndex = stoi(userInput); //casting userInput in the function then the value it returns is used as an index
-						//output the "Selected Departure: departure number: city, country"
-						cout << "Selected Departure: " << departingCityIndex << ": " << lookUpTable[departingCityIndex] << "\n\n";
+					cout << "Please select a departing city by entering a number from the list above: ";
+					getline(cin >> ws, userInput);
+					departingCityIndex = stoi(userInput); //casting userInput in the function then the value it returns is used as an index
+					//output the "Selected Departure: departure number: city, country"
+					cout << "Selected Departure: " << departingCityIndex << ": " << lookUpTable[departingCityIndex] << "\n\n";
 
+					while (!foundDestination) { //this is really just in case the user inputs a destination that doesnt exist we just keep prompting
 						cout << "Please enter a destination city or `quit` to exit: ";
 						getline(cin >> ws, userInput); //user enters destination city
 						//we need to display the cities that the input matches
@@ -74,25 +75,25 @@ int main() {
 								foundDestination = true;
 							}
 						}
-					}
-						if (foundDestination) {
-							cout << endl; //formatting output
-							cout << "Please select a destination by entering a number from the list above: ";
+						if (foundDestination) { //if it gets set to true this will run and then the loop will end afterwards
+							cout << "\nPlease select a destination by entering a number from the list above: ";
 							getline(cin >> ws, userInput);
 							destinationCityIndex = stoi(userInput);
 							cout << "Selected Destination: " << destinationCityIndex << ": " << lookUpTable[destinationCityIndex] << "\n\n";
 							cout << "Shortest Route:\n";
-							bfs(adjList, lookUpTable.size(), departingCityIndex, destinationCityIndex, lookUpTable);
+							bfs(adjList, lookUpTable.size(), departingCityIndex, destinationCityIndex, lookUpTable); //here is the bfs call after the user has chosen the locations
 							cout << "\nMake another search? (`yes` or `no`): ";
 							cin >> userInput;
-							if (toLowerCase(userInput) == "no"){
+							if (toLowerCase(userInput) == "no") {
 								cout << "Press any key to continue . . .";
 								cin.ignore();
 								cin.get();
+								quitProgram = true;
 								break;
 							}
 						}
-						else cout << "Found no results.\n\n";
+						else cout << "Found no results.\n\n"; //if it does not get set to true meaning we cant find the place the loop will keep running and that means whatever the user is looking for is not being found
+					}
 				}
 				else { //if no value is found it should just print this message
 					cout << "Found no results." << "\n\n";
@@ -101,7 +102,7 @@ int main() {
 			else {
 				cout << "Please use at least two characters." << "\n\n";
 			}
-		} while (userInput != "quit");
+		} while (userInput != "quit" && !quitProgram);
 	}
 	else {
 		cout << "Failed to open file. ";
