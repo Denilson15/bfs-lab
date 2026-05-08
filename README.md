@@ -2,8 +2,6 @@
 
 This project was developed as part of the **CS 20 Data Structures** course. The goal was to implement a **Breadth-First Search (BFS)** algorithm to determine possible flight paths between cities, based on input from a `.txt` file.
 
-> 💡 No AI was used in the development of this project. AI tools were utilized solely for documentation purposes, such as generating this README.
-
 ## ✨ Overview
 
 The lab reads a list of direct flights between cities from a text file and determines whether there’s a valid route between a starting location and a target destination using BFS.
@@ -32,5 +30,4 @@ The lab reads a list of direct flights between cities from a text file and deter
 
 ## 🚧 Notes
 
-- This project was part of a lab assignment and may not reflect polished code.
 - Created during my learning process in CS 20 while I was also learning GitHub basics.
